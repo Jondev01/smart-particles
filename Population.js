@@ -26,6 +26,7 @@ class Population{
     this.particles.forEach(function(particle){
       particle.show();
     });
+    this.particles[0].show();
   }
 
   hitGoal(){
@@ -36,17 +37,25 @@ class Population{
 
   calculateFitness(){
     let total = 0;
+    let bestFitness=0;
+    let bestIndex;
     let goal = this.goal;
-    this.particles.forEach(function(particle){
+    this.particles.forEach(function(particle, i){
        total += particle.calculateFitness();
+       if(particle.fitness > bestFitness){
+         bestFitness = particle.fitness;
+         bestIndex = i;
+       }
     });
+    this.bestIndex = bestIndex;
     this.totalFitness = total;
   }
 
   newGeneration(){
     this.calculateFitness();
     let newGen = [];
-    for(let i=0; i<this.size; i++){
+    newGen.push(new Particle(start.x, start.y, this.lifespan, this.particles[this.bestIndex].DNA));
+    for(let i=0; i<this.size-1; i++){
       newGen.push(this.newChild());
     }
     return newGen;
@@ -69,12 +78,14 @@ class Population{
     let newGen = this.newGeneration();
     this.particles = [];
     this.particles = newGen;
+    this.particles[0].highlight = true;
     this.age = 0;
     this.mutate();
   }
 
   mutate(){
-    this.particles.forEach(function(particle){
+    this.particles.forEach(function(particle, i){
+      if( i!= 0)
         particle.DNA.mutate();
     });
   }
@@ -82,7 +93,7 @@ class Population{
   allDead(){
     let alldead = true;
     this.particles.forEach(function(particle){
-      if(!particle.dead)
+      if((!particle.dead) && (!particle.completed))
         alldead = false;
     });
     return alldead;

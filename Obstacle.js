@@ -6,6 +6,7 @@ class Obstacle{
   }
 
   show(){
+    fill(0,0,255);
     rect(this.pos.x, this.pos.y, this.w, this.h);
   }
 

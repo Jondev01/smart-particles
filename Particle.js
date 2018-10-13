@@ -7,6 +7,7 @@ class Particle{
     this.vel = createVector(0,0);
     this.acc = createVector(0,0);
     this.completed = false;
+    this.highlight = false;
     this.dead = false;
     this.fitness = 0;
     this.r = 2;
@@ -22,6 +23,8 @@ class Particle{
     if(!this.dead && !this.completed && this.age<this.lifespan){
       this.move();
       this.vel.add(this.acc);
+      if(this.vel.mag>2)
+        this.vel.mag(2);
       this.pos.add(this.vel);
       this.acc.mult(0);
       this.checkIfDead();
@@ -31,8 +34,11 @@ class Particle{
 
   show(){
     fill(255);
-    noStroke();
-    ellipse(this.pos.x, this.pos.y, 2*this.r, 2*this.r);
+    if(this.highlight){
+      fill(255,0,0);
+    }
+      noStroke();
+      ellipse(this.pos.x, this.pos.y, 2*this.r, 2*this.r);
   }
 
   applyForce(force){
@@ -54,12 +60,12 @@ class Particle{
     if(this.completed)
       this.fitness *= 5*(this.lifespan-this.age+1);
     if(this.dead)
-      this.fitness /= 10*(this.lifespan-this.age+1);
+      this.fitness /= 5*(this.lifespan-this.age+1);
     return this.fitness;
   }
 
   checkIfDead(){
-    if(this.pos.x<0 || this.pos.x>=width || this.pos.y<0 || this.pos.y >= height){
+    if(this.pos.x-this.r<0 || this.pos.x+this.r>=width || this.pos.y-this.r<=0 || this.pos.y+this.r >= height){
       this.dead = true;
     }
   }
