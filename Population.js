@@ -34,12 +34,12 @@ class Population{
     textSize(15);
     fill(255);
     text("Generation: "+this.generation, 10,20);
-    if(this.average){
+    /*if(this.average){
       push();
       fill(255,0,150);
       ellipse(this.average.x, this.average.y, 10, 10);
       pop();
-    }
+    }*/
   }
 
   hitGoal(){

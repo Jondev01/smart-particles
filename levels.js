@@ -45,7 +45,7 @@ function init(){
 
   //level 6
   start = start = createVector(0.5*width, height-10);
-  goal = new Goal(0.75*width, 0.05*height, 10);
+  goal = new Goal(0.95*width, 0.05*height, 10);
   obstacles = [];
   obstacles.push(new Obstacle(0, 0, 0.45*width,height));
   obstacles.push(new Obstacle(0.55*width, 0.1*height, 0.45*width, height));

@@ -1,17 +1,14 @@
 let width = 500;
 let height = 500;
 let population;
-//let goal;
-//let start;
-//let obstacles = [];
 let curLevel;
 
 function setup() {
   createCanvas(width, height);
-  init();
-  curLevel = levels[9];
-
-  population = new Population(1000, curLevel);
+  startSketch();
+  let select = makeSelect();
+  let resetButton = createButton('start');
+  resetButton.mousePressed(startSketch);
 }
 
 function draw() {
@@ -27,6 +24,16 @@ function draw() {
   fill(255,255,0);
   rect(curLevel.start.x, curLevel.start.y, 30, 30);
   pop();
+}
+
+function startSketch(){
+  init();
+  let selectLevel = document.getElementById('selectLevel');
+  let level = 0;
+  if(selectLevel)
+    level = selectLevel.options[selectLevel.selectedIndex].value-1;
+  curLevel = levels[level];
+  population = new Population(1000, curLevel);
 }
 
 function obstaclesShow(){
@@ -45,4 +52,16 @@ function hitObstacles(){
       }
     });
   });
+}
+
+function makeSelect(){
+  let select = document.createElement('select');
+  select.id = 'selectLevel';
+  document.body.appendChild(select);
+  for(let i=0; i<levels.length; i++){
+    let option = document.createElement('option');
+    option.value = i+1;
+    option.text = i+1;
+    select.appendChild(option);
+  }
 }

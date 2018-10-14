@@ -10,7 +10,7 @@ class DNA {
     }
   }
 
-  mutate(rate = 0.6){
+  mutate(rate = 0.75){
     for(let i = 0; i<this.dir.length; i++){
       let rand = random(1);
       if(this.dead && i>this.age-15 && rand <= rate){
