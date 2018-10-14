@@ -11,7 +11,7 @@ class Obstacle{
   }
 
   contains(x,y){
-    return x>=this.pos.x && x<this.pos.x+this.w && y>this.pos.y && y<=this.pos.y+this.h;
+    return x>=this.pos.x && x<=this.pos.x+this.w && y>=this.pos.y && y<=this.pos.y+this.h;
   }
 
 }

@@ -1,9 +1,13 @@
 class Population{
   //this.particles = [];
-  constructor(size, x, y){
+  constructor(size, level){
     this.particles = [];
+    this.generation = 1;
+    let x = level.start.x;
+    let y = level.start.y;
     this.size = size;
-    this.lifespan = 400;
+    this.lifespan = 2000;
+    this.level  = level;
     this.age = 0;
     for(let i=0; i<this.size; i++){
       this.particles.push(new Particle(x, y, this.lifespan));
@@ -27,11 +31,21 @@ class Population{
       particle.show();
     });
     this.particles[0].show();
+    textSize(15);
+    fill(255);
+    text("Generation: "+this.generation, 10,20);
+    if(this.average){
+      push();
+      fill(255,0,150);
+      ellipse(this.average.x, this.average.y, 10, 10);
+      pop();
+    }
   }
 
   hitGoal(){
+    let goal = this.level.goal;
     this.particles.forEach(function(particle){
-      particle.hitGoal();
+      particle.hitGoal(goal);
     });
   }
 
@@ -39,9 +53,12 @@ class Population{
     let total = 0;
     let bestFitness=0;
     let bestIndex;
-    let goal = this.goal;
+    let start = this.level.start;
+    let goal = this.level.goal;
+    this.average = this.deadAverage();
+    let average = this.average;
     this.particles.forEach(function(particle, i){
-       total += particle.calculateFitness();
+       total += particle.calculateFitness(start, goal, average);
        if(particle.fitness > bestFitness){
          bestFitness = particle.fitness;
          bestIndex = i;
@@ -54,7 +71,7 @@ class Population{
   newGeneration(){
     this.calculateFitness();
     let newGen = [];
-    newGen.push(new Particle(start.x, start.y, this.lifespan, this.particles[this.bestIndex].DNA));
+    newGen.push(new Particle(this.level.start.x, this.level.start.y, this.lifespan, this.particles[this.bestIndex].DNA));
     for(let i=0; i<this.size-1; i++){
       newGen.push(this.newChild());
     }
@@ -64,6 +81,7 @@ class Population{
   newChild(){
     let rand = random(1);
     let sum = 0;
+    let start = this.level.start;
     for(let i=0; i<this.particles.length-1; i++){
       let fitness = this.particles[i].fitness/this.totalFitness;
       if(sum<=rand && rand<sum+fitness){
@@ -76,6 +94,7 @@ class Population{
 
   evolve(){
     let newGen = this.newGeneration();
+    this.generation += 1;
     this.particles = [];
     this.particles = newGen;
     this.particles[0].highlight = true;
@@ -97,6 +116,21 @@ class Population{
         alldead = false;
     });
     return alldead;
+  }
+
+  deadAverage(){
+    let average = createVector(0,0);
+    let count = 0;
+    this.particles.forEach(function(particle){
+      if(particle.dead){
+        average.add(particle.pos);
+        count++;
+      }
+    });
+    if(count>0)
+      average.mult(1.0/count);
+    else average = undefined;
+    return average;
   }
 
 }
