@@ -19,6 +19,9 @@ function draw() {
   population.hitGoal();
   hitObstacles();
   population.show();
+  textSize(15);
+  fill(255);
+  text("Generation: "+population.generation, 10,20);
   push();
   rectMode(CENTER);
   fill(255,255,0);

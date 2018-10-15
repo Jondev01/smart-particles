@@ -9,6 +9,7 @@ class Population{
     this.lifespan = 2000;
     this.level  = level;
     this.age = 0;
+    this.neural = false;
     for(let i=0; i<this.size; i++){
       this.particles.push(new Particle(x, y, this.lifespan));
     }
@@ -72,24 +73,35 @@ class Population{
     this.calculateFitness();
     let newGen = [];
     newGen.push(new Particle(this.level.start.x, this.level.start.y, this.lifespan, this.particles[this.bestIndex].DNA));
-    for(let i=0; i<this.size-1; i++){
+    for(let i=1; i<this.size; i++){
       newGen.push(this.newChild());
     }
     return newGen;
   }
 
-  newChild(){
-    let rand = random(1);
-    let sum = 0;
-    let start = this.level.start;
-    for(let i=0; i<this.particles.length-1; i++){
-      let fitness = this.particles[i].fitness/this.totalFitness;
-      if(sum<=rand && rand<sum+fitness){
-        return new Particle(start.x, start.y, this.lifespan, this.particles[i].DNA);
+  selectParticle(){
+      let rand = random(1);
+      let sum = 0;
+      let start = this.level.start;
+      for(let i=0; i<this.particles.length-1; i++){
+        let fitness = this.particles[i].fitness/this.totalFitness;
+        if(sum<=rand && rand<sum+fitness){
+          return new Particle(start.x, start.y, this.lifespan, this.particles[i].DNA);
+        }
+        sum += this.particles[i].fitness/this.totalFitness;
       }
-      sum += this.particles[i].fitness/this.totalFitness;
+      return new Particle(start.x, start.y, this.lifespan, this.particles[this.particles.length-1].DNA);
+  }
+
+  newChild(){
+    if(this.neural){
+      let parent1 = this.selectParticle();
+      let parent2 = this.selectParticle();
+      let childBrain = parent1.brain.crossover(parent2.brain);
+      let child = new Particle(start.x, start.y, this.lifespan);
+      child.brain = childBrain;
     }
-    return new Particle(start.x, start.y, this.lifespan, this.particles[this.particles.length-1].DNA);
+    else return this.selectParticle();
   }
 
   evolve(){
@@ -103,9 +115,13 @@ class Population{
   }
 
   mutate(){
+    let neural = this.neural;
     this.particles.forEach(function(particle, i){
-      if( i!= 0)
-        particle.DNA.mutate();
+      if( i!= 0){
+        if(neural)
+          particle.brain.mutate();
+        else particle.DNA.mutate();
+      }
     });
   }
 

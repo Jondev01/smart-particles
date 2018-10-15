@@ -96,4 +96,14 @@ function init(){
   obstacles.push(new Obstacle(0, 0.25*height, 0.9*width, 0.05*height));
   obstacles.push(new Obstacle(0.1*width, 0.1*height, 0.9*width, 0.05*height));
   levels.push(new Level(start, goal, obstacles));
+
+  //level 12
+  start = createVector(0.5*width, 0.95*height);
+  goal = new Goal(0.5*width, 0.6*height, 10);
+  obstacles = [];
+  obstacles.push(new Obstacle(0.3*width, 0, 0.4*width, 0.1*height));
+  obstacles.push(new Obstacle(0.6*width, 0, 0.1*width, 0.8*height));
+  obstacles.push(new Obstacle(0.3*width, 0.7*height, 0.3*width, 0.1*height));
+  obstacles.push(new Obstacle(0.3*width, 0.2*height, 0.1*width, 0.5*height));
+  levels.push(new Level(start, goal, obstacles));
 }
