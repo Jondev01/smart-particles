@@ -6,10 +6,10 @@ class Population{
     let x = level.start.x;
     let y = level.start.y;
     this.size = size;
-    this.lifespan = 2000;
+    this.lifespan = 700;
     this.level  = level;
     this.age = 0;
-    this.neural = false;
+    this.neural = true;
     for(let i=0; i<this.size; i++){
       this.particles.push(new Particle(x, y, this.lifespan));
     }
@@ -59,11 +59,12 @@ class Population{
     this.average = this.deadAverage();
     let average = this.average;
     this.particles.forEach(function(particle, i){
-       total += particle.calculateFitness(start, goal, average);
-       if(particle.fitness > bestFitness){
-         bestFitness = particle.fitness;
-         bestIndex = i;
-       }
+      let fitness = particle.calculateFitness(start, goal, average)
+      total += fitness
+      if(fitness >= bestFitness){
+        bestFitness = fitness;
+        bestIndex = i;
+      }
     });
     this.bestIndex = bestIndex;
     this.totalFitness = total;
@@ -72,7 +73,12 @@ class Population{
   newGeneration(){
     this.calculateFitness();
     let newGen = [];
-    newGen.push(new Particle(this.level.start.x, this.level.start.y, this.lifespan, this.particles[this.bestIndex].DNA));
+    if(this.neural){
+      let child = new Particle(this.level.start.x, this.level.start.y, this.lifespan);
+      child.brain = this.particles[this.bestIndex].brain.clone();
+      newGen.push(child);
+    }
+    else newGen.push(new Particle(this.level.start.x, this.level.start.y, this.lifespan, this.particles[this.bestIndex].DNA));
     for(let i=1; i<this.size; i++){
       newGen.push(this.newChild());
     }
@@ -86,10 +92,12 @@ class Population{
       for(let i=0; i<this.particles.length-1; i++){
         let fitness = this.particles[i].fitness/this.totalFitness;
         if(sum<=rand && rand<sum+fitness){
-          return new Particle(start.x, start.y, this.lifespan, this.particles[i].DNA);
+          //return new Particle(start.x, start.y, this.lifespan, this.particles[i].DNA);
+          return this.particles[i];
         }
         sum += this.particles[i].fitness/this.totalFitness;
       }
+      return this.particles[this.particles.length-1];
       return new Particle(start.x, start.y, this.lifespan, this.particles[this.particles.length-1].DNA);
   }
 
@@ -98,10 +106,19 @@ class Population{
       let parent1 = this.selectParticle();
       let parent2 = this.selectParticle();
       let childBrain = parent1.brain.crossover(parent2.brain);
-      let child = new Particle(start.x, start.y, this.lifespan);
-      child.brain = childBrain;
+      let child = new Particle(this.level.start.x, this.level.start.y, this.lifespan);
+      child.brain = childBrain.clone();
+      return child;
+      /*let parent = this.selectParticle();
+      let child = new Particle(this.level.start.x, this.level.start.y, this.lifespan);
+      child.brain = parent.brain.clone();
+      return child;*/
     }
-    else return this.selectParticle();
+    else {
+      let parent = this.selectParticle();
+      //return this.selectParticle();
+      return new Particle(this.level.start.x, this.level.start.y, this.lifespan, parent.DNA);
+    }
   }
 
   evolve(){
@@ -111,16 +128,17 @@ class Population{
     this.particles = newGen;
     this.particles[0].highlight = true;
     this.age = 0;
-    this.mutate();
+    this.mutate(0.01);
   }
 
-  mutate(){
+  mutate(rate){
     let neural = this.neural;
     this.particles.forEach(function(particle, i){
-      if( i!= 0){
-        if(neural)
-          particle.brain.mutate();
-        else particle.DNA.mutate();
+      if(i!= 0){
+        if(neural){
+          particle.brain.mutate(rate);
+        }
+        else particle.DNA.mutate(rate);
       }
     });
   }

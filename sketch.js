@@ -2,22 +2,33 @@ let width = 500;
 let height = 500;
 let population;
 let curLevel;
+let speedSlider;
+
+function keyPressed(){
+  if(keyCode==83){
+    alert("saved");
+    saveJSON(population.particles[0].brain, 'NNBrain.json');
+  }
+}
 
 function setup() {
   createCanvas(width, height);
   startSketch();
   let select = makeSelect();
   let resetButton = createButton('start');
+  speedSlider = createSlider(1,100,1);
   resetButton.mousePressed(startSketch);
 }
 
 function draw() {
+  for(let i=0; i<speedSlider.value(); i++){
+    population.update();
+    population.hitGoal();
+    hitObstacles();
+  }
   background(0);
   curLevel.goal.show();
   obstaclesShow();
-  population.update();
-  population.hitGoal();
-  hitObstacles();
   population.show();
   textSize(15);
   fill(255);
@@ -36,7 +47,7 @@ function startSketch(){
   if(selectLevel)
     level = selectLevel.options[selectLevel.selectedIndex].value-1;
   curLevel = levels[level];
-  population = new Population(1000, curLevel);
+  population = new Population(300, curLevel);
 }
 
 function obstaclesShow(){

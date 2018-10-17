@@ -4,7 +4,9 @@ class Matrix{
     this.cols = cols;
     this.matrix = new Array(rows*cols);
     //random entries between two and 1
-    this.matrix.forEach(el => random(2)-1);
+    for(let i=0; i<this.matrix.length; i++){
+      this.matrix[i] = random(2)-1;
+    }
   }
   getElement(i, j){
     return this.matrix[i*this.cols+j];
@@ -16,7 +18,7 @@ class Matrix{
   multiply(m2){
     if(this.cols !== m2.rows)
       return undefined;
-    m = new Matrix(this.rows, m2.cols);
+    let m = new Matrix(this.rows, m2.cols);
     for(let i=0; i<m.rows; i++){
       for(let j=0; j<m.cols; j++){
         let el = 0;
@@ -40,14 +42,15 @@ class Matrix{
     }
     return m;
   }
+
   mutate(rate){
     for(let i=0; i<this.rows; i++){
-      for(let j=0; j<this.rows; j++){
+      for(let j=0; j<this.cols; j++){
         if(random(1)<rate){
           let el = this.getElement(i,j) + random(1)-0.5;
           if(el > 1)
             el = 1;
-          else if(el < 1)
+          else if(el < -1)
             el = -1;
           this.setElement(i,j, el);
         }
@@ -61,10 +64,41 @@ class Matrix{
     let m = new Matrix(this.rows, this.cols);
     for(let i=0; i<this.rows; i++){
       for(let j=0; j<this.cols; j++){
-        let el = i<i0 && j<j0 ? this.getElement(i,j) : partner.getElement(i,j);
+        let el;
+        if(i<i0 && j<j0)
+          el= this.getElement(i,j);
+        else el = partner.getElement(i,j);
         m.setElement(i,j,el);
       }
     }
     return m;
+  }
+
+  static arrayToMatrix(arr){
+    let m = new Matrix(arr.length, 1);
+    for(let i=0; i<arr.length; i++){
+      m.setElement(i,0, arr[i]);
+    }
+    return m;
+  }
+
+  static matrixToArray(m){
+    if(m.cols!==1)
+      return undefined;
+    let arr = new Array(m.rows);
+    for(let i=0; i<m.rows; i++){
+      arr[i] = m.getElement(i,0);
+    }
+    return arr;
+  }
+  clone(){
+    let clone = new Matrix(this.rows, this.cols);
+    for(let i=0; i<clone.rows; i++){
+      for(let j=0; j<clone.cols; j++){
+        let el = this.getElement(i,j);
+        clone.setElement(i,j,el);
+      }
+    }
+    return clone;
   }
 }

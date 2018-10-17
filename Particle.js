@@ -8,10 +8,11 @@ class Particle{
     this.acc = createVector(0,0);
     this.completed = false;
     this.highlight = false;
+    this.neural = true;
     this.dead = false;
     this.fitness = 0;
     this.r = 2;
-    this.brain = new NeuralNetwork(7,6,4);
+    this.brain = new NeuralNetwork(6,5,4);
     if(genes){
       this.DNA =new DNA(genes.lifespan, genes.age);
       this.DNA.dir = [...genes.dir]
@@ -27,8 +28,12 @@ class Particle{
       this.vel.add(this.acc);
       if(this.vel.mag()>5)
         this.vel.setMag(5);
+      if(this.neural)
+        this.vel.setMag(5);
       this.pos.add(this.vel);
       this.acc.mult(0);
+      if(this.neural)
+        this.vel.mult(0);
       this.checkIfDead();
       this.age += 1;
     }
@@ -58,8 +63,9 @@ class Particle{
   move(){
     let force;
     if(this.neural){
-      let NNOutput = this.brain.calculateOutput(this.vision());
-      let max = 0;
+      let NNInput = this.vision();
+      let NNOutput = this.brain.calculateOutput(NNInput);
+      let max = Number.NEGATIVE_INFINITY;
       let maxIndex;
       for(let i =0; i<4; i++){
         if(NNOutput[i]>max){
@@ -87,16 +93,16 @@ class Particle{
   calculateFitness(start, goal, average){
     let d;
     if(!this.completed)
-      d = dist(goal.pos.x, goal.pos.y, this.pos.x, this.pos.y);
+      d = dist(curLevel.goal.pos.x, curLevel.goal.pos.y, this.pos.x, this.pos.y);
     else d = goal.r/2;
     this.fitness = 1/(d*d);
-    if(average){
+    if(average && !this.neural){
       let deadDist = dist(average.x, average.y, this.pos.x, this.pos.y);
       this.fitness *= deadDist;
     }
     if(this.completed)
-      this.fitness *= 5*(this.lifespan-this.age+1)*(this.lifespan-this.age+1);
-    if(this.age<20 && dist(start.x,start.y,this.pos.x,this.pos.y)<40)
+      this.fitness *= 100*(this.lifespan-this.age+1)*(this.lifespan-this.age+1);
+    if(this.age<20 && dist(curLevel.start.x,curLevel.start.y,this.pos.x,this.pos.y)<40 && !this.neural)
       this.fitness /= 1000;
     return this.fitness;
   }
@@ -111,66 +117,64 @@ class Particle{
   vision(){
     //7: direction to goal, current velocity, dist to obstacles
     let vision = [];
-    //calculate direction to goal //0 down, 1 right, 2 up, 3 left
-    let dir = p5.Vector.sub(goal.pos, this.pos);
-    let goalDir = round(2*Math.atan2(dir.y, dir.x)/Math.PI);
-    if(goalDir == -2)
-      goalDir = 1;
-    goalDir += 1;
-    vision.push(goalDir);
+    //direction to goal
+    vision.push((curLevel.goal.pos.x-this.pos.x)/width);
+    vision.push((curLevel.goal.pos.y-this.pos.y)/height);
+
     //velocity direction
-    let velDir = round(2*Math.atan2(this.vel.y, this.vel.x)/Math.PI);
+  /*  let velDir = round(2*Math.atan2(this.vel.y, this.vel.x)/Math.PI);
     if(velDir == -2)
-      velDir = 1;
+      velDir = 2;
     velDir += 1;
-    vision.push(velDir);
+    vision.push(velDir/4);
     //velocity magnitude
-    vision.push(this.vel.mag());
+    vision.push(this.vel.mag()/5);*/
 
     //dist to obstacles down right up left--------------------------------------
+    let xpos, ypos, dist;
     //down--------------------------
-    let xpos = this.pos.x;
-    let ypos = this.pos.y;
-    let dist = 0;
+    xpos = this.pos.x;
+    ypos = this.pos.y;
+    dist = 0;
     while(ypos<height){
       ypos += 1;
       for(let i=0; i<curLevel.obstacles.length; i++){
         let obstacle = curLevel.obstacles[i];
-        if(obstacle.contains(xpos, ypos+this.r)){
+        if(obstacle.contains(xpos, ypos)){
           dist = round(ypos-this.pos.y);
           break;
         }
       }
     }
     if(dist == 0)
-      dist = round(height-ypos);
-    vision.push(dist);
+      dist = round(height-this.pos.y);
+    vision.push(dist/height);
     //right-----------------------
-    let xpos = this.pos.x;
-    let ypos = this.pos.y;
-    let dist = 0;
+    xpos = this.pos.x;
+    ypos = this.pos.y;
+    dist = 0;
     while(xpos<width && dist == 0){
         xpos += 1;
       for(let i=0; i<curLevel.obstacles.length; i++){
         let obstacle = curLevel.obstacles[i];
-        if(obstacle.contains(xpos+this.r, ypos)){
+        if(obstacle.contains(xpos, ypos)){
           dist = round(xpos-this.pos.x);
           break;
         }
       }
     }
     if(dist == 0)
-      dist = width-xpos;
-    vision.push(dist);
+      dist = width-this.pos.x;
+    vision.push(dist/width);
     //up------------------------------
-    let xpos = this.pos.x;
-    let ypos = this.pos.y;
-    let dist = 0;
+    xpos = this.pos.x;
+    ypos = this.pos.y;
+    dist = 0;
     while(ypos>0 && dist == 0){
         ypos -= 1;
       for(let i=0; i<curLevel.obstacles.length; i++){
         let obstacle = curLevel.obstacles[i];
-        if(obstacle.contains(xpos, ypos-this.r)){
+        if(obstacle.contains(xpos, ypos)){
           dist = round(this.pos.y-ypos);
           break;
         }
@@ -178,16 +182,16 @@ class Particle{
     }
     if(dist == 0)
       dist = this.pos.y;
-    vision.push(dist);
+    vision.push(dist/height);
     //left---------------------------
-    let xpos = this.pos.x;
-    let ypos = this.pos.y;
-    let dist = 0;
+    xpos = this.pos.x;
+    ypos = this.pos.y;
+    dist = 0;
     while(xpos>0 && dist == 0){
         xpos -= 1;
       for(let i=0; i<curLevel.obstacles.length; i++){
         let obstacle = curLevel.obstacles[i];
-        if(obstacle.contains(xpos-this.r, ypos)){
+        if(obstacle.contains(xpos, ypos)){
           dist = round(this.pos.x-xpos);
           break;
         }
@@ -195,7 +199,7 @@ class Particle{
     }
     if(dist == 0)
       dist = this.pos.x;
-    vision.push(dist);
+    vision.push(dist/width);
     //---------------------------------------------------------------------
     return vision;
   }

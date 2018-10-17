@@ -3,6 +3,18 @@ let start;
 let goal;
 let obstacles;
 function init(){
+  //level 0
+  start = createVector(10, height/2);
+  goal = new Goal(0.6*width, height/2, 10);
+  obstacles = [];
+  obstacles.push(new Obstacle(0.1*width, 0.45*height, 0.05*width, 0.1*height));
+  obstacles[0].move = function(){
+    if(!this.vel)
+      this.vel = 1;
+
+  }
+  levels.push(new Level(start, goal, obstacles));
+
   //level 1
   start = createVector(width/2, height-10);
   goal = new Goal(0.5*width, 10, 10);
@@ -105,5 +117,16 @@ function init(){
   obstacles.push(new Obstacle(0.6*width, 0, 0.1*width, 0.8*height));
   obstacles.push(new Obstacle(0.3*width, 0.7*height, 0.3*width, 0.1*height));
   obstacles.push(new Obstacle(0.3*width, 0.2*height, 0.1*width, 0.5*height));
+  levels.push(new Level(start, goal, obstacles));
+
+  //level 13
+  start = createVector(0.95*width, 0.95*height);
+  goal = new Goal(0.05*width, 0.05*height, 10);
+  obstacles = [];
+  obstacles.push(new Obstacle(0.3*width, 0, 0.1*width, 0.7*height));
+  obstacles.push(new Obstacle(0.6*width, 0.3*height, 0.1*width, 0.5*height));
+  obstacles.push(new Obstacle(0, 0.3*height, 0.1*width, 0.1*height));
+  obstacles.push(new Obstacle(0.1*width, 0.3*height, 0.1*width, 0.5*height));
+  obstacles.push(new Obstacle(0.1*width, 0.8*height, 0.6*width, 0.1*height));
   levels.push(new Level(start, goal, obstacles));
 }
