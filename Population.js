@@ -6,7 +6,7 @@ class Population{
     let x = level.start.x;
     let y = level.start.y;
     this.size = size;
-    this.lifespan = 700;
+    this.lifespan = 400;
     this.level  = level;
     this.age = 0;
     this.neural = true;
@@ -103,16 +103,16 @@ class Population{
 
   newChild(){
     if(this.neural){
-      let parent1 = this.selectParticle();
+      /*let parent1 = this.selectParticle();
       let parent2 = this.selectParticle();
       let childBrain = parent1.brain.crossover(parent2.brain);
       let child = new Particle(this.level.start.x, this.level.start.y, this.lifespan);
       child.brain = childBrain.clone();
-      return child;
-      /*let parent = this.selectParticle();
+      return child;*/
+      let parent = this.selectParticle();
       let child = new Particle(this.level.start.x, this.level.start.y, this.lifespan);
       child.brain = parent.brain.clone();
-      return child;*/
+      return child;
     }
     else {
       let parent = this.selectParticle();
@@ -128,7 +128,7 @@ class Population{
     this.particles = newGen;
     this.particles[0].highlight = true;
     this.age = 0;
-    this.mutate(0.01);
+    this.mutate(0.02);
   }
 
   mutate(rate){

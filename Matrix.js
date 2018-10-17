@@ -47,7 +47,7 @@ class Matrix{
     for(let i=0; i<this.rows; i++){
       for(let j=0; j<this.cols; j++){
         if(random(1)<rate){
-          let el = this.getElement(i,j) + random(1)-0.5;
+          let el = this.getElement(i,j) + random(2)-1;
           if(el > 1)
             el = 1;
           else if(el < -1)
@@ -100,5 +100,11 @@ class Matrix{
       }
     }
     return clone;
+  }
+
+  static load(data){
+    let m = new Matrix(data.rows, data.cols);
+    m.matrix = data.matrix.slice();
+    return m;
   }
 }

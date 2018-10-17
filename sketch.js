@@ -3,12 +3,23 @@ let height = 500;
 let population;
 let curLevel;
 let speedSlider;
+let loadedData;
 
 function keyPressed(){
   if(keyCode==83){
     alert("saved");
     saveJSON(population.particles[0].brain, 'NNBrain.json');
   }
+  /*if(keyCode==76){
+    alert("load");
+    loadJSON('NN/best.json', function(data){
+      population.particles[0].brain = data;
+    });
+  }*/
+}
+
+function preload(){
+  //loadedData = loadJSON('NN/best.json');
 }
 
 function setup() {
@@ -23,6 +34,7 @@ function setup() {
 function draw() {
   for(let i=0; i<speedSlider.value(); i++){
     population.update();
+    curLevel.goal.update();
     population.hitGoal();
     hitObstacles();
   }
@@ -48,6 +60,8 @@ function startSketch(){
     level = selectLevel.options[selectLevel.selectedIndex].value-1;
   curLevel = levels[level];
   population = new Population(300, curLevel);
+  bestParticleBrain = NeuralNetwork.load(bestParticle);
+  population.particles[0].brain = bestParticleBrain.clone();
 }
 
 function obstaclesShow(){

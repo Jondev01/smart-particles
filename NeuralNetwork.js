@@ -56,4 +56,15 @@ class NeuralNetwork{
     clone.b_h = this.b_h.clone();
     return clone;
   }
+
+  static load(data){
+    if(typeof(data) == "string")
+      data = JSON.parse(data);
+    let n = new NeuralNetwork(data.nInput, data.nHidden, data.nOutput);
+    n.w_ih = Matrix.load(data.w_ih);
+    n.w_ho = Matrix.load(data.w_ho);
+    n.b_i = Matrix.load(data.b_i);
+    n.b_h = Matrix.load(data.b_h);
+    return n;
+  }
 }
