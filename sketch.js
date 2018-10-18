@@ -1,5 +1,5 @@
-let width = 500;
-let height = 500;
+let width = 700;
+let height = 700;
 let population;
 let curLevel;
 let speedSlider;
@@ -59,9 +59,13 @@ function startSketch(){
   if(selectLevel)
     level = selectLevel.options[selectLevel.selectedIndex].value-1;
   curLevel = levels[level];
-  population = new Population(300, curLevel);
+  population = new Population(200, curLevel);
   bestParticleBrain = NeuralNetwork.load(bestParticle);
   population.particles[0].brain = bestParticleBrain.clone();
+  for(let particle of population.particles){
+    if(random(1)<0.6)
+      population.particles[0].brain = bestParticleBrain.clone();
+  }
 }
 
 function obstaclesShow(){
