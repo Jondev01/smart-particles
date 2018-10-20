@@ -43,6 +43,22 @@ class Matrix{
     return m;
   }
 
+  addBias(){
+    if(this.cols !== 1){
+      console.log("Error: couldn't add bias");
+      return undefined;
+    }
+    let m = new Matrix(this.rows+1, 1);
+    //Copy column matrix
+    for(let i=0; i<this.rows; i++){
+      let el = this.getElement(i, 0);
+      m.setElement(i, 0, el);
+    }
+    //Bias: Add a one at the end
+    m.setElement(this.rows, 0, 1);
+    return m;
+  }
+
   mutate(rate){
     for(let i=0; i<this.rows; i++){
       for(let j=0; j<this.cols; j++){
@@ -66,7 +82,7 @@ class Matrix{
       for(let j=0; j<this.cols; j++){
         let el;
         if(i<i0 && j<j0)
-          el= this.getElement(i,j);
+          el = this.getElement(i,j);
         else el = partner.getElement(i,j);
         m.setElement(i,j,el);
       }

@@ -59,11 +59,11 @@ function startSketch(){
   if(selectLevel)
     level = selectLevel.options[selectLevel.selectedIndex].value-1;
   curLevel = levels[level];
-  population = new Population(200, curLevel);
+  population = new Population(300, curLevel);
   bestParticleBrain = NeuralNetwork.load(bestParticle);
   population.particles[0].brain = bestParticleBrain.clone();
   for(let particle of population.particles){
-    if(random(1)<0.6)
+    if(random(1)<0.7)
       population.particles[0].brain = bestParticleBrain.clone();
   }
 }

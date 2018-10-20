@@ -6,7 +6,7 @@ class Population{
     let x = level.start.x;
     let y = level.start.y;
     this.size = size;
-    this.lifespan = 800;
+    this.lifespan = 400;
     this.level  = level;
     this.age = 0;
     this.neural = true;
