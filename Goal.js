@@ -4,7 +4,7 @@ class Goal {
     this.r = r;
     this.xvel = xvel;
     this.dir = createVector(0,0)
-    if(xvel != 0){
+    if(xvel != 0 && !useNeural){
       let angle = random(2*PI);
       this.dir = createVector(Math.cos(angle), Math.sin(angle));
       this.speed = 1;
@@ -12,6 +12,8 @@ class Goal {
   }
 
   update(){
+    if(!useNeural)
+       return;
     if(this.dir.mag() != 0){
       if(this.collide()){
         this.dir.mult(-1);

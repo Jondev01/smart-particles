@@ -1,6 +1,9 @@
 let width = 700;
 let height = 700;
+let useNeural = false;
 let population;
+let useML;
+let useGA;
 let curLevel;
 let speedSlider;
 let loadedData;
@@ -26,9 +29,15 @@ function setup() {
   createCanvas(width, height);
   startSketch();
   let select = makeSelect();
+  //resetbutton
   let resetButton = createButton('start');
   speedSlider = createSlider(1,100,1);
   resetButton.mousePressed(startSketch);
+  //toggle AI
+  useML = createButton('Use machine learning');
+  useML.mousePressed(() => toggleAI(true));
+  useGA = createButton('Use genetic algorithm');
+  useGA.mousePressed(() => toggleAI(false));
 }
 
 function draw() {
@@ -59,13 +68,19 @@ function startSketch(){
   if(selectLevel)
     level = selectLevel.options[selectLevel.selectedIndex].value-1;
   curLevel = levels[level];
-  population = new Population(300, curLevel);
+  let popSize = useNeural ? 300 : 2000;
+  population = new Population(popSize, curLevel);
   bestParticleBrain = NeuralNetwork.load(bestParticle);
   population.particles[0].brain = bestParticleBrain.clone();
   for(let particle of population.particles){
     if(random(1)<0.7)
       population.particles[0].brain = bestParticleBrain.clone();
   }
+}
+
+function toggleAI(useNN){
+  useNeural = useNN;
+  startSketch();
 }
 
 function obstaclesShow(){

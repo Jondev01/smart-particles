@@ -3,7 +3,7 @@ class Particle{
   constructor(x,y, lifespan, genes){
     this.age = 0;
     this.lifespan = lifespan;
-    this.neural = true;
+    this.neural = useNeural;
     this.pos = createVector(x,y);
     this.vel = createVector(0,0);
     if(this.neural)
@@ -113,10 +113,12 @@ class Particle{
       this.fitness *= 100*(this.lifespan-this.age+1)*(this.lifespan-this.age+1);
     if(this.age<20 && dist(curLevel.start.x,curLevel.start.y,this.pos.x,this.pos.y)<40 && !this.neural)
       this.fitness /= 1000;
-    if(this.dead)
-      this.fitness /= 1000;
-    this.fitness*= this.visited.size;
-    this.fitness *= (this.hit+0.1);
+    if(this.neural){
+      if(this.dead)
+        this.fitness /= 1000;
+      this.fitness*= this.visited.size;
+      this.fitness *= (this.hit+0.1);
+    }
     return this.fitness;
   }
 

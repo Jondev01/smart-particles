@@ -9,7 +9,7 @@ class Population{
     this.lifespan = 400;
     this.level  = level;
     this.age = 0;
-    this.neural = true;
+    this.neural =useNeural;
     for(let i=0; i<this.size; i++){
       this.particles.push(new Particle(x, y, this.lifespan));
     }

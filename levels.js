@@ -5,7 +5,7 @@ let obstacles;
 let bestParticle;
 function init(){
   //level 0
-  start = createVector(width/2, height/2);
+  /*start = createVector(width/2, height/2);
   goal = new Goal(0.75*width, height/2, 50, 1);
   obstacles = [];
   obstacles.push(new Obstacle(0.6*width, 0.45*height, 0.05*width, 0.1*height));
@@ -17,7 +17,7 @@ function init(){
       this.vel = 1;
 
   }
-  levels.push(new Level(start, goal, obstacles));
+  levels.push(new Level(start, goal, obstacles));*/
 
   //level 1
   start = createVector(width/2, 0.5*height);
