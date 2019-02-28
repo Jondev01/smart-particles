@@ -68,7 +68,7 @@ function startSketch(){
   if(selectLevel)
     level = selectLevel.options[selectLevel.selectedIndex].value-1;
   curLevel = levels[level];
-  let popSize = useNeural ? 300 : 2000;
+  let popSize = useNeural ? 300 : 3000;
   population = new Population(popSize, curLevel);
   bestParticleBrain = NeuralNetwork.load(bestParticle);
   population.particles[0].brain = bestParticleBrain.clone();
